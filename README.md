@@ -33,7 +33,7 @@ The backend is built using Node.js and Express.js to handle all API routes. SQLi
 ![Update Product](screenshots/4-update-product.png)
 
 ### 5. Delete Product
-![Delete Product](screenshots/delete-product.png)
+![Delete Product](screenshots/5-delete-product.png)
 
 ---
 
