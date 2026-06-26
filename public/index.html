@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simple Products Manager</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f4f8;
+      color: #333;
+    }
+
+    header {
+      background: #2d6a4f;
+      color: white;
+      padding: 18px 30px;
+      font-size: 22px;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+
+    /* ── FORM CARD ── */
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+
+    .card h2 {
+      margin-bottom: 16px;
+      font-size: 18px;
+      color: #2d6a4f;
+      border-bottom: 2px solid #e0e0e0;
+      padding-bottom: 8px;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    input {
+      flex: 1;
+      min-width: 140px;
+      padding: 10px 14px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+      transition: border 0.2s;
+    }
+
+    input:focus { border-color: #2d6a4f; }
+
+    .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: opacity 0.2s;
+    }
+
+    button:hover { opacity: 0.85; }
+
+    .btn-green  { background: #2d6a4f; color: white; }
+    .btn-blue   { background: #1d6fa4; color: white; }
+    .btn-yellow { background: #e9a31a; color: white; }
+    .btn-red    { background: #c0392b; color: white; }
+
+    /* ── TOAST ── */
+    #toast {
+      display: none;
+      position: fixed;
+      top: 20px; right: 20px;
+      background: #2d6a4f;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      z-index: 999;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    /* ── TABLE ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th {
+      background: #2d6a4f;
+      color: white;
+      padding: 12px;
+      text-align: left;
+    }
+
+    td { padding: 11px 12px; border-bottom: 1px solid #eee; }
+
+    tr:hover td { background: #f9fafb; }
+
+    .action-btns { display: flex; gap: 6px; }
+
+    .action-btns button {
+      padding: 6px 12px;
+      font-size: 12px;
+      border-radius: 6px;
+    }
+
+    #no-products {
+      text-align: center;
+      color: #999;
+      padding: 20px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<header>🛒 Simple Products Manager — DecodeLabs Project 3</header>
+
+<div id="toast"></div>
+
+<div class="container">
+
+  <!-- ADD PRODUCT -->
+  <div class="card">
+    <h2>➕ Add New Product</h2>
+    <div class="form-row">
+      <input type="text"   id="name"     placeholder="Product Name (e.g. Laptop)" />
+      <input type="number" id="price"    placeholder="Price (e.g. 49999)" />
+      <input type="number" id="quantity" placeholder="Quantity (e.g. 10)" />
+    </div>
+    <div class="btn-row">
+      <button class="btn-green" onclick="createProduct()">➕ Add Product</button>
+      <button class="btn-blue"  onclick="loadProducts()">🔄 Refresh List</button>
+    </div>
+  </div>
+
+  <!-- UPDATE PRODUCT -->
+  <div class="card">
+    <h2>✏️ Update Product (enter ID + new values)</h2>
+    <div class="form-row">
+      <input type="number" id="update-id"       placeholder="Product ID" style="max-width:120px"/>
+      <input type="text"   id="update-name"     placeholder="New Name" />
+      <input type="number" id="update-price"    placeholder="New Price" />
+      <input type="number" id="update-quantity" placeholder="New Quantity" />
+    </div>
+    <div class="btn-row">
+      <button class="btn-yellow" onclick="updateProduct()">✏️ Update Product</button>
+    </div>
+  </div>
+
+  <!-- DELETE PRODUCT -->
+  <div class="card">
+    <h2>🗑️ Delete Product</h2>
+    <div class="form-row">
+      <input type="number" id="delete-id" placeholder="Product ID to delete" style="max-width:200px"/>
+    </div>
+    <div class="btn-row">
+      <button class="btn-red" onclick="deleteProduct()">🗑️ Delete Product</button>
+    </div>
+  </div>
+
+  <!-- PRODUCTS TABLE -->
+  <div class="card">
+    <h2>📦 All Products</h2>
+    <table id="product-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Price (₹)</th>
+          <th>Quantity</th>
+          <th>Created At</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="product-body"></tbody>
+    </table>
+    <p id="no-products">No products found. Add one above!</p>
+  </div>
+
+</div>
+
+<script>
+  const API = 'http://localhost:3000/api/products';
+
+  // ── Show toast message ──
+  function showToast(msg, isError = false) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.background = isError ? '#c0392b' : '#2d6a4f';
+    t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 3000);
+  }
+
+  // ── Load all products ──
+  async function loadProducts() {
+    const res  = await fetch(API);
+    const data = await res.json();
+    const tbody = document.getElementById('product-body');
+    const noMsg = document.getElementById('no-products');
+    tbody.innerHTML = '';
+
+    if (data.products.length === 0) {
+      noMsg.style.display = 'block';
+      return;
+    }
+
+    noMsg.style.display = 'none';
+    data.products.forEach(p => {
+      tbody.innerHTML += `
+        <tr id="row-${p.id}">
+          <td>${p.id}</td>
+          <td>${p.name}</td>
+          <td>₹${p.price}</td>
+          <td>${p.quantity}</td>
+          <td>${p.created_at}</td>
+          <td class="action-btns">
+            <button class="btn-yellow" onclick="fillUpdate(${p.id},'${p.name}',${p.price},${p.quantity})">✏️ Edit</button>
+            <button class="btn-red"    onclick="quickDelete(${p.id})">🗑️ Delete</button>
+          </td>
+        </tr>`;
+    });
+  }
+
+  // ── Create product ──
+  async function createProduct() {
+    const name     = document.getElementById('name').value.trim();
+    const price    = document.getElementById('price').value;
+    const quantity = document.getElementById('quantity').value;
+
+    if (!name || !price || !quantity) {
+      showToast('⚠️ Please fill all fields!', true); return;
+    }
+
+    const res  = await fetch(API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, price: Number(price), quantity: Number(quantity) })
+    });
+    const data = await res.json();
+    showToast('✅ ' + data.message);
+    document.getElementById('name').value = '';
+    document.getElementById('price').value = '';
+    document.getElementById('quantity').value = '';
+    loadProducts();
+  }
+
+  // ── Fill update form from table row ──
+  function fillUpdate(id, name, price, quantity) {
+    document.getElementById('update-id').value       = id;
+    document.getElementById('update-name').value     = name;
+    document.getElementById('update-price').value    = price;
+    document.getElementById('update-quantity').value = quantity;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ── Update product ──
+  async function updateProduct() {
+    const id       = document.getElementById('update-id').value;
+    const name     = document.getElementById('update-name').value.trim();
+    const price    = document.getElementById('update-price').value;
+    const quantity = document.getElementById('update-quantity').value;
+
+    if (!id) { showToast('⚠️ Enter Product ID!', true); return; }
+
+    const res  = await fetch(`${API}/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, price: Number(price), quantity: Number(quantity) })
+    });
+    const data = await res.json();
+    if (!res.ok) { showToast('❌ ' + data.error, true); return; }
+    showToast('✅ ' + data.message);
+    loadProducts();
+  }
+
+  // ── Delete from form ──
+  async function deleteProduct() {
+    const id = document.getElementById('delete-id').value;
+    if (!id) { showToast('⚠️ Enter Product ID to delete!', true); return; }
+    await quickDelete(id);
+    document.getElementById('delete-id').value = '';
+  }
+
+  // ── Delete from table button ──
+  async function quickDelete(id) {
+    if (!confirm(`Delete product ID ${id}?`)) return;
+    const res  = await fetch(`${API}/${id}`, { method: 'DELETE' });
+    const data = await res.json();
+    if (!res.ok) { showToast('❌ ' + data.error, true); return; }
+    showToast('✅ ' + data.message);
+    loadProducts();
+  }
+
+  // Load on page open
+  loadProducts();
+</script>
+</body>
+</html>
